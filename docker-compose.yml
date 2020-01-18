@@ -1,4 +1,4 @@
-version: "2"
+version: "3"
 services:
   db:
     image: ealgis/postgis:latest
@@ -8,5 +8,7 @@ services:
       - PG_PASSWORD=postgres
       - DB_NAME=perth
     volumes:
-       - .:/data
+      - .:/data
       - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:

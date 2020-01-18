@@ -1,22 +1,22 @@
-# MRWA-514
+# Road_Network.zip
 
 Source:
-https://catalogue.data.wa.gov.au/dataset/ntwk-iris-road-network
+https://catalogue.data.wa.gov.au/dataset/road-network
 
-# MRWA-510
-
-Source:
-https://catalogue.data.wa.gov.au/dataset/ntwk-intersections
-
-# LGATE-006
+# Intersections.zip
 
 Source:
-https://catalogue.data.wa.gov.au/dataset/local-government-authority-lga-boundaries-lgate-006
+https://catalogue.data.wa.gov.au/dataset/intersections
 
-# LGATE-008
+# LGATE-233
 
 Source:
-https://catalogue.data.wa.gov.au/dataset/localities-lgate-008
+https://catalogue.data.wa.gov.au/dataset/local-government-authority-lga-boundaries
+
+# LGATE-234
+
+Source:
+https://catalogue.data.wa.gov.au/dataset/localities
 
 
 

@@ -1,0 +1,10 @@
+*.egg-info
+*.pyc
+*.pyo
+.*swp
+.DS_Store
+.gitattributes
+.mypy_cache
+.ropeproject
+.vscode/
+__pycache__

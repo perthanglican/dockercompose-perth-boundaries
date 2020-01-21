@@ -10,5 +10,17 @@ services:
     volumes:
       - .:/data
       - pgdata:/var/lib/postgresql/data
+  builder:
+    build:
+      context: builder/
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/app
+    environment:
+      - DB_PASSWORD=postgres
+      - DB_NAME=perth
+      - DB_HOST=db
+    depends_on:
+    - db
 volumes:
   pgdata:

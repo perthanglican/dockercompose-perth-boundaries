@@ -14,8 +14,8 @@ dropdb -U postgres perth
 createdb -U postgres perth
 echo 'CREATE EXTENSION postgis;' | psql -U postgres perth
 
-loadshape Intersections.zip 3857
-loadshape Road_Network.zip 3857
-loadshape LocalitiesLGATE_234.zip 4283
-loadshape LocalGovernmentAuthorityLGABoundariesLGATE_233.zip 4283
+loadshape Intersections.zip 4326
+loadshape Road_Network.zip 4326
+loadshape LocalitiesLGATE_234.zip 3857
+loadshape LocalGovernmentAuthorityLGABoundariesLGATE_233.zip 3857
 

@@ -72,6 +72,9 @@ class MountLawley(Parish):
         83653678,
         83653677,
     ],[
+        83667029,
+        83667030,
+        83667031,
         83667032,
         83667033,
         83667034,
@@ -99,6 +102,7 @@ class MountLawley(Parish):
     ],[
         83639602,
         83639601,
+        (115.88517,-31.93866),
     ]])
     MTLAWLEY_JOHN_THIRD = ('Mt Lawley - John, Third St, ...', [[
         83660734,

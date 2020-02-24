@@ -7,6 +7,7 @@ def main():
     print("Building parishes:")
     session = db.session()
     session.query(db.Result).delete()
+    session.query(db.Cut).delete()
     session.commit()
     for parish in perth:
         problems = getattr(parish, 'problems', '')

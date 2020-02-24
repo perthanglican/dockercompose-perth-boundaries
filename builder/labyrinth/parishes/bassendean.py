@@ -16,7 +16,7 @@ class Bassendean(Parish):
 
     def geom(self):
         def cut_bayswater():
-            return self.cut_locality('BAYSWATER', 2, Bayswater.BAYSWATER_GREY_ST)
+            return self.cut_locality('BAYSWATER', (Bayswater.BAYSWATER_GREY_ST, 2))
 
         return func.ST_Union(
             self.locality_union('Bassendean', 'Ashfield'),

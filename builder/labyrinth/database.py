@@ -32,6 +32,7 @@ class DatabaseAccess:
         self.LGAs = Base.classes.lgas
         self.RoadNetwork = Base.classes.road_network
         self.Result = Result
+        self.Cut = Cut
 
     def session(self):
         return Session(bind=self.engine)
@@ -46,6 +47,13 @@ class Result(DecBase):
     definition = Column(String)
     problems = Column(String)
     geom = Column(Geometry(geometry_type='MULTIPOLYGON', srid=4326))
+
+
+class Cut(DecBase):
+    __tablename__ = 'debug_cuts'
+    id = Column(Integer, primary_key=True)
+    geom = Column(Geometry(geometry_type='MULTILINESTRING', srid=4326))
+    description = Column(String)
 
 
 db = DatabaseAccess()

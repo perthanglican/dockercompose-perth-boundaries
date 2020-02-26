@@ -10,6 +10,10 @@ class RoadPath:
         self.coords = self.resolve_objectids(objectids)
 
     def resolve_objectids(self, objectids):
+        """
+        objectids should be in consecutive order. jumps between roads will
+        result in an interpolated join in the resulting line
+        """
         session = db.session()
         try:
             q = session.query(

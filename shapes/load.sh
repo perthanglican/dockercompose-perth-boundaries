@@ -6,17 +6,24 @@ loadshape()
   name="$2"
   srid="$3"
   tempd=$(mktemp -d)
-  (cd "$tempd" && unzip "$f" && shp2pgsql -s "$srid" *.shp "$name" | psql -U postgres perth && rm -rf "$tempd")
+  (cd "$tempd" && unzip "$f" && shp2pgsql -s "$srid" *.shp "$name" | psql -U postgres -h db perth && rm -rf "$tempd")
 }
 
 apt-get update && apt-get -y install unzip
 
-dropdb -U postgres perth
-createdb -U postgres perth
-echo 'CREATE EXTENSION postgis;' | psql -U postgres perth
+export PGPASSWORD=postgres
+dropdb -h db -U postgres perth
+createdb -h db -U postgres perth
+echo 'CREATE EXTENSION postgis;' | psql -h db -U postgres perth
 
-loadshape Intersections.zip intersections 4326
-loadshape Road_Network.zip road_network 4326
+gunzip -c Intersections.geojson.gz > Intersections.geojson
+ogr2ogr -lco geometry_name=geom -lco fid=gid -t_srs EPSG:3857 -f "PostgreSQL" "PG:dbname=perth host=db user=postgres password=postgres" Intersections.geojson
+rm Intersections.geojson
+
+gunzip -c Road_Network.geojson.gz > Road_Network.geojson
+ogr2ogr -lco geometry_name=geom -lco fid=gid -t_srs EPSG:3857 -f "PostgreSQL" "PG:dbname=perth host=db user=postgres password=postgres" Road_Network.geojson
+rm Road_Network.geojson
+
 loadshape LocalitiesLGATE_234.zip localities 3857
 loadshape LocalGovernmentAuthorityLGABoundariesLGATE_233.zip lgas 3857
 

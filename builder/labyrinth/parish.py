@@ -4,6 +4,54 @@ from .database import db
 from sqlalchemy.sql.functions import func
 from sqlalchemy.orm.exc import NoResultFound
 
+
+class RoadPath:
+    def __init__(self, *objectids):
+        self.coords = self.resolve_objectids(objectids)
+
+    def resolve_objectids(self, objectids):
+        session = db.session()
+        try:
+            q = session.query(
+                func.ST_AsGeoJSON(
+                    func.ST_Transform(
+                        func.ST_Multi(func.ST_LineMerge(func.ST_Union(db.RoadNetwork.geom))),
+                        3857))).filter(
+                            db.RoadNetwork.objectid.in_(objectids))
+            cut = json.loads(q.one()[0])
+        finally:
+            session.close()
+
+        joined = []
+        for line in cut['coordinates']:
+            joined += line
+        return joined
+
+
+class Cut:
+    def __init__(self, description, *paths):
+        self.cut = self.resolve(description, paths)
+
+    def resolve(self, description, paths):
+        obj = {
+            'crs': {'type': 'name', 'properties': {'name': 'EPSG:3857'}},
+            'type': 'MultiLineString',
+            'coordinates': [t.coords for t in paths]
+        }
+        session = db.session()
+        try:
+            q = session.query(
+                func.ST_GeomFromGeoJSON(json.dumps(obj)))
+            # log for debugging purposes
+            session.add(db.Cut(
+                description=description,
+                geom=func.ST_Transform(q, 4326)))
+            session.commit()
+            return q.one()[0]
+        finally:
+            session.close()
+
+
 class Parish:
     name = None
     code = None
@@ -27,45 +75,14 @@ class Parish:
             res = func.ST_Union(res, self.get_locality_by_name(locality))
         return res
 
-    def cut_locality(self, name, *defns):
+    def cut_locality(self, name, *cuts):
         query = self.session.query(db.Localities.geom).filter(db.Localities.name == name.upper())
-        for (description, defn), n in defns:
-            cut = self.make_road_slice(description, defn)
-            query = func.ST_GeometryN(func.ST_Split(func.ST_Snap(query, cut, 1), cut), n)
+        for cut, n in cuts:
+            query = func.ST_GeometryN(func.ST_Split(func.ST_Snap(query, cut.cut, 1), cut.cut), n)
         try:
             return query
         except NoResultFound:
             raise Exception("Cutting non-existent locality: {}".format(name))
-
-    def make_road_slice(self, description, roads):
-        coord_parts = []
-        for segment in roads:
-            cut = json.loads(
-                self.session.query(
-                    func.ST_AsGeoJSON(
-                        func.ST_Transform(
-                            func.ST_Multi(
-                                func.ST_LineMerge(
-                                    func.ST_Union(db.RoadNetwork.geom))),
-                            3857)))
-                .filter(db.RoadNetwork.objectid.in_(segment)).one()[0])
-            joined = []
-            for line in cut['coordinates']:
-                joined += line
-            coord_parts.append(joined)
-
-        cut['type'] = 'MultiLineString'
-        cut['coordinates'] = coord_parts
-
-        q = self.session.query(
-            func.ST_GeomFromGeoJSON(json.dumps(cut))).one()[0]
-        self.session.add(db.Cut(
-            description=description,
-            geom=func.ST_Transform(q, 4326)))
-        self.session.commit()
-
-        return self.session.query(
-            func.ST_GeomFromGeoJSON(json.dumps(cut))).one()[0]
 
     def geom(self):
         """

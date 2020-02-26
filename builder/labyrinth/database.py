@@ -14,6 +14,13 @@ class DatabaseAccess:
         self.engine = self.make_engine()
         DecBase.metadata.create_all(self.engine)
         self.reflect()
+        self.cleanup()
+
+    def cleanup(self):
+        session = self.session()
+        session.query(self.Result).delete()
+        session.query(self.Cut).delete()
+        session.commit()
 
     def make_engine(self):
         return create_engine("postgres://postgres:postgres@db/perth")
@@ -44,7 +51,7 @@ class Result(DecBase):
     id = Column(Integer, primary_key=True)
     code = Column(String, unique=True)
     name = Column(String, unique=True)
-    definition = Column(String)
+    definition = Column(String, unique=True)
     problems = Column(String)
     geom = Column(Geometry(geometry_type='MULTIPOLYGON', srid=4326))
 

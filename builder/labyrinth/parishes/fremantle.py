@@ -1,5 +1,5 @@
 
-from ..parish import Parish
+from ..parish import Parish, Cut, RoadPath
 from sqlalchemy.sql.functions import func
 
 
@@ -12,33 +12,12 @@ class Fremantle(Parish):
     """
     problems = ""
 
-    HAMILTON_CARRINGTON = ('Hamilton Hill - along Carrington / Rockingham Rd', [
-        [
-            # Rockingham Road
-            83591747,
-            83591748,
-            83591749,
-            83591750,
-            83591751,
-            83591752,
-            83591753,
-            83591754,
-            83591756,
-            83591757,
-            83591758,
-            83591759,
-        ], [
-            # Carrington
-            83590002,
-            83590001,
-            83590000,
-            83589999,
-            83589998,
-            83589997,
-            83589996,
-            83589995,
-            83645959
-        ]])
+    HAMILTON_CARRINGTON = Cut(
+        'Hamilton Hill - along Carrington / Rockingham Rd',
+        # Rockingham Road
+        RoadPath(83591747, 83591748, 83591749, 83591750, 83591751, 83591752, 83591753, 83591754, 83591756, 83591757, 83591758, 83591759),
+        # Carrington
+        RoadPath(83590002, 83590001, 83590000, 83589999, 83589998, 83589997, 83589996, 83589995, 83645959))
 
     def geom(self):
         def cut_hamilton_hill():

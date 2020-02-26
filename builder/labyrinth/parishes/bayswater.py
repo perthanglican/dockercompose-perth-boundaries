@@ -1,5 +1,5 @@
 
-from ..parish import Parish
+from ..parish import Parish, Cut, RoadPath
 from sqlalchemy.sql.functions import func
 
 
@@ -18,20 +18,17 @@ class Bayswater(Parish):
     """
     problems = "Locality of Bayswater boundary relies on non-existant roads"
 
-    MORLEY_WALTER_RD = ('Morley - along Walter Road',
-        [[83637447, 83637448, 83637449, 83637450, 83637451, 83637452, 83637453, 83637454, 83637455, 83637456, 83637457, 83637458, 83637459, 83637460, 83637461, 83637462, 83637462, 83637463, 83637464, 83637465, 83639344, 83639345, 83639341]])
-    BEDFORD_BEAUFORT_ST = ('Bedford - along Beaufort Street', [[83653651, 83637437, 83637438, 83637439, 83637431, 83637432, 83637433, 83637434, 83637435, 83637436, 83637543, 83637544, 83637545, 83637531]])
-    BAYSWATER_GREY_ST = ('Bayswater - along Grey Street', [[
-        83638166,
-        83638165,
-        83638164,
-        83638163,
-        83638162,
-        83638161,
-        83638160,
-        83638159,
-        83639342,
-        83638843]])
+    MORLEY_WALTER_RD = Cut(
+        'Morley - along Walter Road',
+        RoadPath(83637447, 83637448, 83637449, 83637450, 83637451, 83637452, 83637453, 83637454, 83637455, 83637456, 83637457, 83637458, 83637459, 83637460, 83637461, 83637462, 83637462, 83637463, 83637464, 83637465, 83639344, 83639345, 83639341))
+
+    BEDFORD_BEAUFORT_ST = Cut(
+        'Bedford - along Beaufort Street',
+        RoadPath(83653651, 83637437, 83637438, 83637439, 83637431, 83637432, 83637433, 83637434, 83637435, 83637436, 83637543, 83637544, 83637545, 83637531))
+
+    BAYSWATER_GREY_ST = Cut(
+        'Bayswater - along Grey Street',
+        RoadPath(83638166, 83638165, 83638164, 83638163, 83638162, 83638161, 83638160, 83638159, 83639342, 83638843))
 
     def geom(self):
         def cut_morley():

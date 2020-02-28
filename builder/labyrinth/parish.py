@@ -3,16 +3,17 @@ import json
 from .database import db
 from sqlalchemy.sql.functions import func
 from sqlalchemy.orm.exc import NoResultFound
+from traceback import print_stack
 
 
 class RoadPath:
-    def __init__(self, *objectids):
-        self.coords = self.resolve_objectids(objectids)
+    def __init__(self, *network_elements):
+        self.coords = self.resolve(network_elements)
 
-    def resolve_objectids(self, objectids):
+    def resolve(self, network_elements):
         """
-        objectids should be in consecutive order. jumps between roads will
-        result in an interpolated join in the resulting line
+        network_elements should be in consecutive order. jumps between non-contiguous
+        elements will result in an interpolated join in the resulting line
         """
         session = db.session()
         try:
@@ -21,7 +22,7 @@ class RoadPath:
                     func.ST_Transform(
                         func.ST_Multi(func.ST_LineMerge(func.ST_Union(db.RoadNetwork.geom))),
                         3857))).filter(
-                            db.RoadNetwork.objectid.in_(objectids))
+                            db.RoadNetwork.network_element.in_(network_elements))
             cut = json.loads(q.one()[0])
         finally:
             session.close()

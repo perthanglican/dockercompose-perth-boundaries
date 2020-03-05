@@ -1,14 +1,32 @@
 
+import math
 import json
 from .database import db
 from sqlalchemy.sql.functions import func
 from sqlalchemy.orm.exc import NoResultFound
-from traceback import print_stack
+from itertools import tee
+from .util import make_logger
 
 
-class RoadPath:
+make_logger(__name__)
+
+
+# https://docs.python.org/3/library/itertools.html
+def pairwise(iterable):
+    "s -> (s0,s1), (s1,s2), (s2, s3), ..."
+    a, b = tee(iterable)
+    next(b, None)
+    return zip(a, b)
+
+
+class GeoJSONPath:
+    def crs(self):
+        return self.path['crs']['properties']['name']
+
+
+class RoadPath(GeoJSONPath):
     def __init__(self, *network_elements):
-        self.coords = self.resolve(network_elements)
+        self.path = self.resolve(network_elements)
 
     def resolve(self, network_elements):
         """
@@ -19,18 +37,88 @@ class RoadPath:
         try:
             q = session.query(
                 func.ST_AsGeoJSON(
+                    func.ST_Multi(func.ST_Union(db.RoadNetwork.geom)))).filter(
+                        db.RoadNetwork.network_element.in_(network_elements))
+            cut = q.one()[0]
+        finally:
+            session.close()
+        return json.loads(cut)
+
+
+class LatLngPath(GeoJSONPath):
+    def __init__(self, *coords):
+        gj = json.dumps({
+            'crs': {'type': 'name', 'properties': {'name': 'EPSG:4326'}},
+            'type': 'LineString',
+            'coordinates': coords,
+        })
+        session = db.session()
+        try:
+            self.path = json.loads(session.query(
+                func.ST_AsGeoJSON(
                     func.ST_Transform(
-                        func.ST_Multi(func.ST_LineMerge(func.ST_Union(db.RoadNetwork.geom))),
-                        3857))).filter(
-                            db.RoadNetwork.network_element.in_(network_elements))
-            cut = json.loads(q.one()[0])
+                        func.ST_Multi(func.ST_GeomFromGeoJSON(gj)), 3857))).one()[0])
         finally:
             session.close()
 
-        joined = []
-        for line in cut['coordinates']:
-            joined += line
-        return joined
+
+class Suture(GeoJSONPath):
+    def __init__(self, *paths):
+        self.path = self.resolve(paths)
+
+    def suture(self, strands):
+        def d(p1, p2):
+            x1, y1 = p1
+            x2, y2 = p2
+            return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+
+        # pick an arbitrary initial path
+        result = strands[0]
+        candidates = strands[1:]
+        while candidates:
+            distances = []
+            for candidate in candidates:
+                distances.append((d(result[-1], candidate[0]), candidate, iter, iter))
+                distances.append((d(result[-1], candidate[-1]), candidate, iter, reversed))
+                distances.append((d(result[0], candidate[0]), candidate, reversed, iter))
+                distances.append((d(result[0], candidate[-1]), candidate, reversed, reversed))
+            distances.sort(key=lambda x: x[0])
+            _, candidate, res_iter, cand_iter = distances[0]
+            candidates.remove(candidate)
+            result = list(res_iter(result)) + list(cand_iter(candidate))
+        return result
+
+    def resolve(self, paths):
+        strands = []
+
+        def add(path):
+            ls = path['coordinates']
+            assert(type(ls) is list)
+            strands.append(ls)
+
+        def add_multi(multipath):
+            for ls in multipath['coordinates']:
+                assert(type(ls) is list)
+                strands.append(ls)
+
+        for path in (t.path for t in paths):
+            if path['type'] == 'MultiLineString':
+                add_multi(path)
+            elif path['type'] == 'LineString':
+                add(path)
+            else:
+                raise Exception("Attempt to suture unknown object: {}".format(path.type))
+
+        coords = self.suture(strands)
+        if coords is None:
+            return None
+        crses = list(set(t.crs() for t in paths))
+        assert(len(crses) == 1)
+        return {
+            'crs': {'type': 'name', 'properties': {'name': crses[0]}},
+            'type': 'LineString',
+            'coordinates': coords,
+        }
 
 
 class Cut:
@@ -38,15 +126,13 @@ class Cut:
         self.cut = self.resolve(description, paths)
 
     def resolve(self, description, paths):
-        obj = {
-            'crs': {'type': 'name', 'properties': {'name': 'EPSG:3857'}},
-            'type': 'MultiLineString',
-            'coordinates': [t.coords for t in paths]
-        }
+        f = func.ST_Multi(func.ST_GeomFromGeoJSON(json.dumps(paths[0].path)))
+        for p1, p2 in pairwise(paths):
+           f = func.ST_Union(f, func.ST_GeomFromGeoJSON(json.dumps(p2.path)))
+
         session = db.session()
         try:
-            q = session.query(
-                func.ST_GeomFromGeoJSON(json.dumps(obj)))
+            q = session.query(f)
             # log for debugging purposes
             session.add(db.Cut(
                 description=description,

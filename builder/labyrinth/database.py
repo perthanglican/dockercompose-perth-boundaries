@@ -11,8 +11,14 @@ Session = sessionmaker()
 
 class DatabaseAccess:
     def __init__(self):
-        self.engine = self.make_engine()
-        DecBase.metadata.create_all(self.engine)
+        # lazy so that it can be run from the tests
+        self._engine = None
+
+    def connect(self):
+        if self._engine is not None:
+            return
+        self._engine = self.make_engine()
+        DecBase.metadata.create_all(self._engine)
         self.reflect()
         self.cleanup()
 
@@ -27,7 +33,7 @@ class DatabaseAccess:
 
     def reflect(self):
         metadata = MetaData()
-        metadata.reflect(self.engine, only=[
+        metadata.reflect(self._engine, only=[
             'intersections',
             'localities',
             'lgas',
@@ -42,7 +48,8 @@ class DatabaseAccess:
         self.Cut = Cut
 
     def session(self):
-        return Session(bind=self.engine)
+        self.connect()
+        return Session(bind=self._engine)
 
 
 class Result(DecBase):

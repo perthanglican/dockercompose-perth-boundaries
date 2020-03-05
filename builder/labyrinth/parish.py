@@ -72,6 +72,11 @@ class Suture(GeoJSONPath):
             x2, y2 = p2
             return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
 
+        def join(l1, l2):
+            if l1[-1] == l2[0]:
+                return l1[:-1] + l2
+            return l1 + l2
+
         # pick an arbitrary initial path
         result = strands[0]
         candidates = strands[1:]
@@ -85,7 +90,7 @@ class Suture(GeoJSONPath):
             distances.sort(key=lambda x: x[0])
             _, candidate, res_iter, cand_iter = distances[0]
             candidates.remove(candidate)
-            result = list(res_iter(result)) + list(cand_iter(candidate))
+            result = join(list(res_iter(result)), list(cand_iter(candidate)))
         return result
 
     def resolve(self, paths):

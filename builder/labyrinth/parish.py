@@ -132,8 +132,8 @@ class Cut:
 
     def resolve(self, description, paths):
         f = func.ST_Multi(func.ST_GeomFromGeoJSON(json.dumps(paths[0].path)))
-        for p1, p2 in pairwise(paths):
-           f = func.ST_Union(f, func.ST_GeomFromGeoJSON(json.dumps(p2.path)))
+        for _, p2 in pairwise(paths):
+            f = func.ST_Union(f, func.ST_GeomFromGeoJSON(json.dumps(p2.path)))
 
         session = db.session()
         try:

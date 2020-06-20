@@ -27,4 +27,3 @@ class Fremantle(Parish):
             self.locality_union(
                 'Fremantle', 'North Fremantle', 'East Fremantle', 'Palmyra', 'Beaconsfield'),
             cut_hamilton_hill())
-

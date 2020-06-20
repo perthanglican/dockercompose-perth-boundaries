@@ -4,19 +4,10 @@ import json
 from .database import db
 from sqlalchemy.sql.functions import func
 from sqlalchemy.orm.exc import NoResultFound
-from itertools import tee
 from .util import make_logger
 
 
 make_logger(__name__)
-
-
-# https://docs.python.org/3/library/itertools.html
-def pairwise(iterable):
-    "s -> (s0,s1), (s1,s2), (s2, s3), ..."
-    a, b = tee(iterable)
-    next(b, None)
-    return zip(a, b)
 
 
 class GeoJSONPath:
@@ -132,8 +123,8 @@ class Cut:
 
     def resolve(self, description, paths):
         f = func.ST_Multi(func.ST_GeomFromGeoJSON(json.dumps(paths[0].path)))
-        for _, p2 in pairwise(paths):
-            f = func.ST_Union(f, func.ST_GeomFromGeoJSON(json.dumps(p2.path)))
+        for p in paths[1:]:
+            f = func.ST_Union(f, func.ST_GeomFromGeoJSON(json.dumps(p.path)))
 
         session = db.session()
         try:

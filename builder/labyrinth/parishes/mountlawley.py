@@ -42,6 +42,7 @@ class MountLawley(Parish):
         Suture(
             RoadPath('1253029/1-S', '1250282/5-S', '1250282/15-S', '1250282/14-S'),
             RoadPath('1250223/6-S', '1250223/9-S', '1250223/10-S', '1250223/8-S', '1120708/2-S', '1120708/1-S')))
+
     def geom(self):
         def cut_bedford():
             return self.cut_locality('BEDFORD', (Bayswater.BEDFORD_BEAUFORT_ST, 1))

@@ -11,8 +11,7 @@ RUN sed -i s/httpredir.debian.org/mirror.aarnet.edu.au/ /etc/apt/sources.list
 RUN apt-get update && apt-get install -y --no-install-recommends \
       build-essential \
       python3 python3-dev python3-pip python3-setuptools \
-      git gnupg \
-      python-cairo liblzma-dev libxml2-dev \
+      git gnupg liblzma-dev libxml2-dev \
       python3-gdal gdal-bin postgis libxslt-dev pkg-config p7zip unzip \
       libpq-dev \
       wget less git zip && \
@@ -29,8 +28,6 @@ RUN apt-get update && apt-get install -y postgresql-client-12 && \
 RUN ln -s /usr/bin/python3 /usr/bin/python
 
 WORKDIR /app
-
-RUN pip3 install -U "pip<8"
 
 ADD requirements.txt /requirements.txt
 

@@ -1,12 +1,12 @@
 # Road_Network.zip
 
 Source:
-https://catalogue.data.wa.gov.au/dataset/road-network
+https://catalogue.data.wa.gov.au/dataset/mrwa-road-network
 
 # Intersections.zip
 
 Source:
-https://catalogue.data.wa.gov.au/dataset/intersections
+https://catalogue.data.wa.gov.au/dataset/mrwa-intersections
 
 # LGATE-233
 

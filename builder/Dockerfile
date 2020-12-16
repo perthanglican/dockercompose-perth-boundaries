@@ -1,4 +1,4 @@
-# temporary: need the latest GDAL for PostgreSQL 12 compat
+# temporary: need the latest GDAL for PostgreSQL 13 compat
 FROM debian:unstable
 MAINTAINER https://github.com/perthanglican/dockercompose-perth-boundaries
 
@@ -22,7 +22,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # https://wiki.postgresql.org/wiki/Apt
 RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main" > /etc/apt/sources.list.d/pgdg.list
 RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
-RUN apt-get update && apt-get install -y postgresql-client-12 && \
+RUN apt-get update && apt-get install -y postgresql-client-13 && \
   apt-get autoremove -y --purge && \
   apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 RUN ln -s /usr/bin/python3 /usr/bin/python

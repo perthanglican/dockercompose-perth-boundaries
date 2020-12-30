@@ -9,8 +9,6 @@ loadshape()
   (cd "$tempd" && unzip "$f" && shp2pgsql -s "$srid" *.shp "$name" | psql -U postgres -h db perth && rm -rf "$tempd")
 }
 
-apt-get update && apt-get -y install unzip
-
 export PGPASSWORD=postgres
 dropdb -h db -U postgres perth
 createdb -h db -U postgres perth

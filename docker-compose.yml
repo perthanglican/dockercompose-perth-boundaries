@@ -10,9 +10,9 @@ services:
     volumes:
       - .:/data
       - pgdata:/var/lib/postgresql/data
-  builder:
+  labyrinth:
     build:
-      context: builder/
+      context: labyrinth/
       dockerfile: Dockerfile
     volumes:
       - ./:/app

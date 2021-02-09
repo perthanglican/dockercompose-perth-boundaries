@@ -25,3 +25,6 @@ rm Road_Network.geojson
 loadshape LocalitiesLGATE_234.zip localities 3857
 loadshape LocalGovernmentAuthorityLGABoundariesLGATE_233.zip lgas 3857
 
+# snap the localities and LGAs
+echo 'update localities set geom=st_snaptogrid(geom, 1);' | PGPASSWORD=postgres psql -U postgres -h db -d perth
+echo 'update lgas set geom=st_snaptogrid(geom, 1);' | PGPASSWORD=postgres psql -U postgres -h db -d perth

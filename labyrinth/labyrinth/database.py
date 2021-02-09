@@ -20,7 +20,6 @@ class DatabaseAccess:
         self._engine = self.make_engine()
         DecBase.metadata.create_all(self._engine)
         self.reflect()
-        self.cleanup()
 
     def cleanup(self):
         session = self.session()

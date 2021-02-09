@@ -1,19 +1,19 @@
-from .parish import Suture, GeoJSONPath
+from .geometry import Suture, GeoJSONPath
 import json
 
 
 class DummyPath(GeoJSONPath):
     def __init__(self, path):
-        self.path = path
+        self._test_path = path
+
+    def _get_path(self, _db):
+        return self._test_path
 
 
 def make_crs(typ, path):
     return {
         "type": typ,
-        "crs": {
-            "type": "name",
-            "properties": {"name": "EPSG:3857"},
-        },
+        "crs": {"type": "name", "properties": {"name": "EPSG:3857"},},
         "coordinates": path,
     }
 
@@ -23,7 +23,9 @@ def r(l):
 
 
 def eq(o1, exp):
-    l = o1.path["coordinates"]
+    l = o1.get_path(None)["coordinates"]
+    print("l=", l)
+    print("exp=", exp)
     return (l == exp) or (r(l) == exp)
 
 

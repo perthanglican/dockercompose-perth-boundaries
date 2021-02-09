@@ -1,4 +1,5 @@
-from ..parish import Parish, Cut, RoadPath, LatLngPath, Suture
+from ..parish import Parish
+from ..geometry import Cut, RoadPath, LatLngPath, Suture
 from sqlalchemy.sql.functions import func
 from .bayswater import Bayswater
 

@@ -9,8 +9,9 @@ Session = sessionmaker()
 
 
 class DatabaseAccess:
-    def __init__(self):
+    def __init__(self, connection_string):
         # lazy so that it can be run from the tests
+        self._connection_string = connection_string
         self._engine = None
 
     def connect(self):
@@ -28,7 +29,7 @@ class DatabaseAccess:
         session.commit()
 
     def make_engine(self):
-        return create_engine("postgres://postgres:postgres@localhost/perth")
+        return create_engine(self._connection_string)
 
     def reflect(self):
         metadata = MetaData()
@@ -65,6 +66,3 @@ class Cut(DecBase):
     id = Column(Integer, primary_key=True)
     geom = Column(Geometry(geometry_type="MULTILINESTRING", srid=4326))
     description = Column(String)
-
-
-db = DatabaseAccess()

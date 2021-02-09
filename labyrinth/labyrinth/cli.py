@@ -1,9 +1,10 @@
 from .parishes import perth
-from .database import db
+from .database import DatabaseAccess
 
 
 def main():
     print("Building parishes:")
+    db = DatabaseAccess("postgres://postgres:postgres@localhost/perth")
     for parish in perth:
         problems = getattr(parish, "problems", "")
         if problems and problems != "":
@@ -12,7 +13,7 @@ def main():
                     parish.get_code(), getattr(parish, "problems", "")
                 )
             )
-        parish().generate()
+        parish(db).generate()
     print("{} parishes generated.".format(len(perth)))
 
 

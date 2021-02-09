@@ -1,4 +1,5 @@
-from ..parish import Parish, Cut, RoadPath
+from ..parish import Parish
+from ..geometry import Cut, RoadPath
 from sqlalchemy.sql.functions import func
 
 

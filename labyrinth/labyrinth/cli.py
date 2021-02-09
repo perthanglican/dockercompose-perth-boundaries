@@ -4,18 +4,26 @@ import argparse
 
 
 def build(args):
-    print("Building parishes:")
-    db = DatabaseAccess(args.connection_string)
-    for parish in perth:
-        problems = getattr(parish, "problems", "")
-        if problems and problems != "":
-            print(
-                "  {:>30}: {}".format(
-                    parish.get_code(), getattr(parish, "problems", "")
+    def _run_labyrinth():
+        print("Building parishes:")
+        db = DatabaseAccess(args.connection_string)
+        for parish in perth:
+            problems = getattr(parish, "problems", "")
+            if problems and problems != "":
+                print(
+                    "  {:>30}: {}".format(
+                        parish.get_code(), getattr(parish, "problems", "")
+                    )
                 )
-            )
-        parish(db).generate()
-    print("{} parishes generated.".format(len(perth)))
+            parish(db).generate()
+        print("{} parishes generated.".format(len(perth)))
+
+    def _write_geojson():
+        pass
+
+    _run_labyrinth()
+    if args.geojson:
+        _write_geojson()
 
 
 def main():

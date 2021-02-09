@@ -1,4 +1,3 @@
-
 from ..parish import Parish
 from sqlalchemy.sql.functions import func
 
@@ -22,8 +21,9 @@ class Highgate(Parish):
     railway line to Guildford Road to Ellesmere Street,
     then along Ellesmere Street to the river.
     """
+
     code = "Highgate"
     problems = ""
 
     def geom(self):
-        return self.get_locality_by_name('Highgate')
+        return self.get_locality_by_name("Highgate")

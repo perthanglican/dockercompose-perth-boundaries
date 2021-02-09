@@ -1,4 +1,3 @@
-
 from ..parish import Parish
 from sqlalchemy.sql.functions import func
 
@@ -9,9 +8,10 @@ class Lesmurdie(Parish):
     Lesmurdie, Walliston, Bickley, Carmel, Pickering Brook,
     within the boundary of the Shire of Kalamunda.
     """
+
     problems = ""
 
     def geom(self):
         return self.locality_union(
-            'Lesmurdie', 'Walliston', 'Bickley', 'Carmel',
-            'Pickering Brook')
+            "Lesmurdie", "Walliston", "Bickley", "Carmel", "Pickering Brook"
+        )

@@ -1,4 +1,3 @@
-
 from ..parish import Parish
 from sqlalchemy.sql.functions import func
 from .bayswater import Bayswater
@@ -12,12 +11,13 @@ class Bassendean(Parish):
     then the line of Jackson Street to Wicks Street, along Wicks Street to
     Vincent Street and along Vincent Street to the railway line.
     """
+
     problems = "Locality of Bayswater boundary relies on non-existant roads"
 
     def geom(self):
         def cut_bayswater():
-            return self.cut_locality('BAYSWATER', (Bayswater.BAYSWATER_GREY_ST, 2))
+            return self.cut_locality("BAYSWATER", (Bayswater.BAYSWATER_GREY_ST, 2))
 
         return func.ST_Union(
-            self.locality_union('Bassendean', 'Ashfield'),
-            cut_bayswater())
+            self.locality_union("Bassendean", "Ashfield"), cut_bayswater()
+        )

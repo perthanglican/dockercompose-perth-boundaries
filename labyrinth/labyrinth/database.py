@@ -1,4 +1,3 @@
-
 from geoalchemy2 import Geometry, Geography  # noqa
 from sqlalchemy import create_engine, MetaData, Column, String, Integer
 from sqlalchemy.ext.automap import automap_base
@@ -33,11 +32,9 @@ class DatabaseAccess:
 
     def reflect(self):
         metadata = MetaData()
-        metadata.reflect(self._engine, only=[
-            'intersections',
-            'localities',
-            'lgas',
-            'road_network'])
+        metadata.reflect(
+            self._engine, only=["intersections", "localities", "lgas", "road_network"]
+        )
         Base = automap_base(metadata=metadata)
         Base.prepare()
         self.Intersections = Base.classes.intersections
@@ -53,20 +50,20 @@ class DatabaseAccess:
 
 
 class Result(DecBase):
-    __tablename__ = 'results'
+    __tablename__ = "results"
 
     id = Column(Integer, primary_key=True)
     code = Column(String, unique=True)
     name = Column(String, unique=True)
     definition = Column(String, unique=True)
     problems = Column(String)
-    geom = Column(Geometry(geometry_type='MULTIPOLYGON', srid=4326))
+    geom = Column(Geometry(geometry_type="MULTIPOLYGON", srid=4326))
 
 
 class Cut(DecBase):
-    __tablename__ = 'debug_cuts'
+    __tablename__ = "debug_cuts"
     id = Column(Integer, primary_key=True)
-    geom = Column(Geometry(geometry_type='MULTILINESTRING', srid=4326))
+    geom = Column(Geometry(geometry_type="MULTILINESTRING", srid=4326))
     description = Column(String)
 
 

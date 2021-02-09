@@ -28,7 +28,7 @@ class DatabaseAccess:
         session.commit()
 
     def make_engine(self):
-        return create_engine("postgres://postgres:postgres@db/perth")
+        return create_engine("postgres://postgres:postgres@localhost/perth")
 
     def reflect(self):
         metadata = MetaData()

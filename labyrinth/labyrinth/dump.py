@@ -24,5 +24,6 @@ def to_json(db):
     parishes = []
     for result in session.query(Result).all():
         parishes.append(make_parish(result))
+    parishes.sort(key=lambda p: p["code"])
 
     return {"parishes": parishes}
